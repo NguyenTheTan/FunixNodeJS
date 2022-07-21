@@ -2,6 +2,12 @@
   margin: 1rem 0;
 }
 
+.product-form {
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+}
+
 .form-control label,
 .form-control input {
   display: block;
