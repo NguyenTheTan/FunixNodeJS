@@ -35,7 +35,7 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId)
+  Product.findAll({ where: { id: prodId } })
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -51,13 +51,12 @@ exports.getEditProduct = (req, res, next) => {
 };
 
 exports.postEditProduct = (req, res, next) => {
-  console.log(req.body);
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
   const updatedPrice = req.body.price;
-  Product.findById(prodId)
+  Product.findAll({ where: { id: prodId } })
     .then((product) => {
       product.title = updatedTitle;
       product.imageUrl = updatedImageUrl;
@@ -88,7 +87,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId)
+  Product.findAll({ where: { id: prodId } })
     .then((product) => {
       return product.destroy();
     })
