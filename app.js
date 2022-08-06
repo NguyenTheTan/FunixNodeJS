@@ -23,13 +23,16 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use((req, res, next) => {
-  User.findAll(1)
+  User.findByPk(1)
     .then((user) => {
       req.user = user;
+      console.log(req.user);
       next();
     })
     .catch((err) => console.log(err));
 });
+
+app.use(errorController.get404);
 
 Product.belongsTo(User, { contraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
@@ -39,7 +42,7 @@ sequelize
   .sync()
   .then((result) => {
     // console.log(result);
-    return User.findAll({ where: { id: 1 } });
+    return User.findByPk(1);
   })
   .then((user) => {
     if (!user) {
@@ -51,9 +54,6 @@ sequelize
     return user;
   })
   .then((user) => {
-    console.log(user);
     app.listen(3000);
   })
   .catch((err) => console.error(err));
-
-app.use(errorController.get404);
