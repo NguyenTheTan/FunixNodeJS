@@ -1,59 +1,58 @@
-const path = require("path");
+const path = require('path');
 
-const express = require("express");
-const bodyParser = require("body-parser");
-const sequelize = require("./util/database");
-const Product = require("./models/product");
-const User = require("./models/user");
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const errorController = require("./controllers/error");
+const errorController = require('./controllers/error');
+const sequelize = require('./util/database');
+const Product = require('./models/product');
+const User = require('./models/user');
 
 const app = express();
 
-app.set("view engine", "ejs");
-app.set("views", "views");
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
+const adminRoutes = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/admin", adminRoutes);
-app.use(shopRoutes);
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  User.findByPk(1)
-    .then((user) => {
+  User.findById(1)
+    .then(user => {
       req.user = user;
-      console.log(req.user);
       next();
     })
-    .catch((err) => console.log(err));
+    .catch(err => console.log(err));
 });
+
+app.use('/admin', adminRoutes);
+app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-Product.belongsTo(User, { contraints: true, onDelete: "CASCADE" });
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 
 sequelize
   // .sync({ force: true })
   .sync()
-  .then((result) => {
+  .then(result => {
+    return User.findById(1);
     // console.log(result);
-    return User.findByPk(1);
   })
-  .then((user) => {
+  .then(user => {
     if (!user) {
-      return User.create({
-        name: "Max",
-        email: "max@example.com",
-      });
+      return User.create({ name: 'Max', email: 'test@test.com' });
     }
     return user;
   })
-  .then((user) => {
+  .then(user => {
+    // console.log(user);
     app.listen(3000);
   })
-  .catch((err) => console.error(err));
+  .catch(err => {
+    console.log(err);
+  });
