@@ -3,8 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const errorController = require("./controllers/error");
 const app = express();
-const mongoConnect = require("./util/database").mongoConnect;
 const User = require("./models/user");
+const mongoose = require("mongoose");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -29,6 +29,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongoConnect(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(
+    "mongodb+srv://root:roottoor@cluster0.mlpal2x.mongodb.net/?retryWrites=true&w=majority"
+  )
+  .then((result) => app.listen(3000))
+  .catch((err) => {
+    console.log(err);
+  });
