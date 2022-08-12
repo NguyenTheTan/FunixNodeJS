@@ -7,6 +7,6 @@ exports.getLogin = (req, res, next) => {
   });
 };
 exports.postLogin = (req, res, next) => {
-  res.setHeader("Set-cookie", "loggedIn=true");
+  res.setHeader("Set-cookie", "loggedIn=true; HttpOnly");
   res.redirect("/");
 };
