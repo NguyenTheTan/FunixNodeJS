@@ -9,14 +9,15 @@ const csrf = require("csurf");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+
 const MONGODB_URI =
   "mongodb+srv://root:roottoor@cluster0.mlpal2x.mongodb.net/shop";
+
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
-
 const csrfProtection = csrf();
 
 app.set("view engine", "ejs");
@@ -36,15 +37,7 @@ app.use(
     store: store,
   })
 );
-
-app.use((req, res, next) => {
-  User.findById("62f505b2e146a10b4f561a53")
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
-});
+app.use(csrfProtection);
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -55,15 +48,19 @@ app.use((req, res, next) => {
       req.user = user;
       next();
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => console.log(err));
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.use(csrfProtection);
+
 app.use(errorController.get404);
 
 mongoose
